@@ -1,6 +1,9 @@
 package com.codecool.supersprinter3000.service;
 
+import com.codecool.supersprinter3000.controller.dto.NewUserStoryDto;
+import com.codecool.supersprinter3000.controller.dto.UserStoryDto;
 import com.codecool.supersprinter3000.entity.UserStory;
+import com.codecool.supersprinter3000.mapper.UserStoryMapper;
 import com.codecool.supersprinter3000.repository.UserStoryRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -12,19 +15,28 @@ import java.util.List;
 public class UserStoryService {
 
     private final UserStoryRepository userStoryRepository;
+    private final UserStoryMapper userStoryMapper;
 
-    public UserStoryService(UserStoryRepository userStoryRepository) {
+    public UserStoryService(UserStoryRepository userStoryRepository, UserStoryMapper userStoryMapper) {
         this.userStoryRepository = userStoryRepository;
+        this.userStoryMapper = userStoryMapper;
     }
 
-    public List<UserStory> getAllUserStories() {
-        return userStoryRepository.findAllByOrderById();
+    public List<UserStoryDto> getAllUserStories() {
+        return userStoryRepository.findAll().stream()
+                .map(userStoryMapper::mapUserStoryEntityToDto)
+                .toList();
     }
 
-    public UserStory getUserStory(Long id) {
-
+    public UserStoryDto getUserStory(Long id) {
         return userStoryRepository.findById(id)
+                .map(userStoryMapper::mapUserStoryEntityToDto)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    public UserStoryDto addNewUserStory(NewUserStoryDto newUserStory) {
+        UserStory entity = userStoryMapper.mapUserStoryDtoToEntity(newUserStory);
+        UserStory saveUserStory = userStoryRepository.save(entity);
+        return userStoryMapper.mapUserStoryEntityToDto(saveUserStory);
+    }
 }
