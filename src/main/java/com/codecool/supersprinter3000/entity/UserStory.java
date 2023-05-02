@@ -1,13 +1,9 @@
 package com.codecool.supersprinter3000.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
@@ -16,6 +12,7 @@ import javax.validation.constraints.Size;
 
 @Data
 @Entity
+@NoArgsConstructor
 public class UserStory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,9 +29,8 @@ public class UserStory {
     private Integer businessValue = 100;
     @Enumerated(EnumType.STRING)
     private UserStoryStatus userStoryStatus;
-
-    public UserStory() {
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Developer developer;
 
     public UserStory(String title, String story, String acceptanceCriteria, Double estimation, Integer businessValue, UserStoryStatus userStoryStatus) {
         this.title = title;
